@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCS Retailer Onboarding Suite</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23007C85'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='18' fill='white'>B</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#007C85;--teal-light:#4ECDC4;--teal-dim:rgba(0,124,133,0.15);
+  --bg:#0A0A14;--surface:rgba(255,255,255,0.035);--border:rgba(255,255,255,0.07);
+  --txt:#fff;--txt-dim:rgba(255,255,255,0.45);--txt-faint:rgba(255,255,255,0.2);
+  --red:#CC0000;--red-dim:rgba(204,0,0,0.15);
+  --amber:#B45309;--amber-dim:rgba(180,83,9,0.15);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,20,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1100px;margin:0 auto;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-dot{width:30px;height:30px;background:var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.brand-name{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.brand-sub{font-size:11px;color:var(--txt-dim)}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 14px;font-size:13px;color:var(--txt-dim);border-radius:8px;cursor:pointer;transition:all .15s;border:none;background:transparent}
+.nav-link:hover,.nav-link.active{color:var(--txt);background:rgba(255,255,255,0.07)}
+
+.page{display:none}.page.active{display:block}
+
+.hero{max-width:1100px;margin:0 auto;padding:5rem 2rem 4rem;text-align:center}
+.hero-eyebrow{font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-size:clamp(36px,5vw,58px);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px}
+.hero-title span{color:var(--teal-light)}
+.hero-sub{font-size:18px;color:var(--txt-dim);line-height:1.6;max-width:560px;margin:0 auto 2.5rem}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-n{font-size:32px;font-weight:800;color:var(--teal-light)}
+.hero-stat-l{font-size:12px;color:var(--txt-dim);margin-top:2px}
+
+.divider{max-width:1100px;margin:0 auto;padding:0 2rem}
+.rule{height:1px;background:var(--border);margin:3rem 0}
+
+.modules-grid{max-width:1100px;margin:0 auto;padding:0 2rem 5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.mod-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
+.mod-card:hover{border-color:rgba(0,124,133,0.4);transform:translateY(-2px)}
+.mod-card.live{border-color:rgba(0,124,133,0.25)}
+.mod-card.building{opacity:.7}
+.mod-tag{position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+.tag-live{background:rgba(0,124,133,0.2);color:var(--teal-light);border:1px solid rgba(0,124,133,0.3)}
+.tag-building{background:var(--amber-dim);color:#FCD34D;border:1px solid rgba(180,83,9,0.3)}
+.tag-ready{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1)}
+.mod-num{font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.mod-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.mod-purpose{font-size:13px;color:var(--txt-dim);line-height:1.6;margin-bottom:16px;flex:1}
+.mod-meta{border-top:1px solid var(--border);padding-top:14px;margin-top:auto}
+.mod-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.meta-chip{font-size:11px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:3px 8px}
+.mod-how{font-size:12px;color:var(--txt-dim);line-height:1.6;margin-bottom:12px}
+.mod-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--teal);border:1px solid var(--teal);border-radius:8px;color:#fff;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;transition:background .15s;font-family:inherit}
+.mod-btn:hover{background:#006670}
+.mod-btn.ghost{background:transparent;border-color:var(--border);color:var(--txt-dim);cursor:default}
+
+.section-wrap{max-width:1100px;margin:0 auto;padding:0 2rem}
+.section-eyebrow{font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.section-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--txt-dim);line-height:1.6;margin-bottom:2.5rem}
+
+/* PROCESS */
+.process-wrap{max-width:1100px;margin:0 auto;padding:0 2rem 5rem}
+.phase{margin-bottom:3rem}
+.phase-header{display:flex;align-items:center;gap:14px;margin-bottom:1.5rem}
+.phase-pill{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 14px;border-radius:20px}
+.phase-pre{background:var(--red-dim);color:#FCA5A5;border:1px solid rgba(204,0,0,0.3)}
+.phase-post{background:var(--teal-dim);color:var(--teal-light);border:1px solid rgba(0,124,133,0.3)}
+.phase-title{font-size:20px;font-weight:700}
+.phase-sub{font-size:14px;color:var(--txt-dim);margin-top:2px}
+.gate{display:flex;align-items:center;gap:12px;margin:1.5rem 0;padding:12px 16px;background:var(--amber-dim);border:1px solid var(--amber);border-radius:10px}
+.gate-icon{font-size:18px;flex-shrink:0}
+.gate-label{font-size:12px;font-weight:700;color:#FCD34D;text-transform:uppercase;letter-spacing:.06em}
+.gate-desc{font-size:12px;color:rgba(255,255,255,0.5);margin-top:1px}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.step-card.has-tool{border-color:rgba(0,124,133,0.25);background:rgba(0,124,133,0.04)}
+.step-n{font-size:11px;font-weight:600;color:var(--txt-faint);margin-bottom:6px}
+.step-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.step-desc{font-size:12px;color:var(--txt-dim);line-height:1.5;margin-bottom:10px}
+.step-tool{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--teal-light);background:rgba(0,124,133,0.12);border:1px solid rgba(0,124,133,0.25);border-radius:6px;padding:4px 10px;text-decoration:none;cursor:pointer;transition:background .15s;margin-top:4px}
+.step-tool:hover{background:rgba(0,124,133,0.22)}
+.step-tool-label{font-size:10px;color:rgba(255,255,255,0.35);margin-right:2px;text-transform:uppercase;letter-spacing:.04em}
+.connector{display:flex;align-items:center;margin:1.5rem 0;padding:0 8px}
+.conn-line{flex:1;height:1px;background:linear-gradient(90deg,var(--red),var(--teal))}
+.conn-mid{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);padding:0 14px;white-space:nowrap;text-transform:uppercase;letter-spacing:.07em}
+.assistant-card{background:linear-gradient(135deg,rgba(0,124,133,0.08),rgba(78,205,196,0.04));border:1px solid rgba(0,124,133,0.3);border-radius:16px;padding:24px;margin:2rem 0;display:flex;gap:20px;align-items:flex-start}
+.assistant-icon{font-size:32px;flex-shrink:0}
+.assistant-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.assistant-desc{font-size:13px;color:var(--txt-dim);line-height:1.6}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <div class="brand">
+      <div class="brand-dot">B</div>
+      <div>
+        <div class="brand-name">Barrows Connected Store</div>
+        <div class="brand-sub">Retailer Onboarding Suite</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('tools')">Tools</button>
+      <button class="nav-link" onclick="showPage('process')">Process</button>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE 1: TOOLS -->
+<div class="page active" id="page-tools">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Retailer Onboarding Suite</div>
+    <div class="hero-title">One suite.<br><span>Every retailer.</span></div>
+    <div class="hero-sub">Seven tools that take a new retailer opportunity from first conversation to live network — without spreadsheets.</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-n">7</div><div class="hero-stat-l">Tools</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">4</div><div class="hero-stat-l">Live now</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">126</div><div class="hero-stat-l">Due diligence questions</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><div class="rule"></div></div>
+
+  <div class="section-wrap">
+    <div class="section-eyebrow">The tools</div>
+    <div class="section-title">What each module does</div>
+    <div class="section-sub">Each tool is standalone — no login, no backend, runs in your browser.</div>
+  </div>
+
+  <div class="modules-grid">
+
+    <!-- Module 01 — LIVE -->
+    <div class="mod-card live">
+      <span class="mod-tag tag-live">Live</span>
+      <div class="mod-num">Module 01</div>
+      <div class="mod-title">Retailer Scorecard</div>
+      <div class="mod-purpose">Qualifies a new retailer opportunity before any commercial resource is committed. Scores the retailer across strategic, commercial, and operational dimensions — calculating Monetisation Index at maturity, flagging gate blockers, and producing a PURSUE / EXPLORE / DECLINE verdict with an immediate action list.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">MI calculator</span>
+          <span class="meta-chip">Gate blocker flags</span>
+          <span class="meta-chip">Shareable output</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Enter retailer profile → run MI calculator → score dimensions → assess gate readiness → generate report with verdict and action list.</div>
+        <a class="mod-btn" href="https://nicostone-cloud.github.io/Retailer-Scorecard/" target="_blank">Open tool ↗</a>
+      </div>
+    </div>
+
+    <!-- Module 02 — BUILDING -->
+    <div class="mod-card building">
+      <span class="mod-tag tag-building">In development</span>
+      <div class="mod-num">Module 02</div>
+      <div class="mod-title">RFP Response Generator</div>
+      <div class="mod-purpose">Generates structured RFP response content from a brief. Takes the retailer context, selected sections, and tone, and produces a complete first-draft response grounded in BCS's prior library and ISMS security facts.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">AI-powered</span>
+          <span class="meta-chip">ISMS-grounded</span>
+          <span class="meta-chip">Section-selectable</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Enter retailer name and RFP context → select sections → AI drafts response from BCS prior library → copy and refine.</div>
+        <span class="mod-btn ghost">In development</span>
+      </div>
+    </div>
+
+    <!-- Module 04 — LIVE -->
+    <div class="mod-card live">
+      <span class="mod-tag tag-live">Live</span>
+      <div class="mod-num">Module 04</div>
+      <div class="mod-title">Retailer Due Diligence Questionnaire</div>
+      <div class="mod-purpose">Before we deploy hardware, sign an MSA, or commit capital, we need to understand how a retailer operates. Their IT infrastructure determines what ConnectOS can connect to. Their data maturity determines what measurement is possible. Their procurement process determines how long CAPEX approval takes. Their security posture determines what we need to evidence. This tool generates a structured 126-question questionnaire that surfaces all of it — across commercial, technical, operational, data, and compliance dimensions — before any of it becomes a problem mid-programme.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">126 questions</span>
+          <span class="meta-chip">9 sections</span>
+          <span class="meta-chip">ISO 27001 mapped</span>
+          <span class="meta-chip">Print-ready</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Select retailer and question categories → generate scoped questionnaire → export or print for the discovery and due diligence pack.</div>
+        <a class="mod-btn" href="https://nicostone-cloud.github.io/Retailer-Q/" target="_blank">Open tool ↗</a>
+      </div>
+    </div>
+
+    <!-- Module 05 — READY TO DEPLOY -->
+    <div class="mod-card">
+      <span class="mod-tag tag-ready">Built</span>
+      <div class="mod-num">Module 05</div>
+      <div class="mod-title">RFP Deck Generator</div>
+      <div class="mod-purpose">Generates slide-ready RFP deck content from retailer context and selected sections. When the security section is included, automatically injects BCS's full ISMS fact sheet — ISO 27001 status, encryption, sub-processors, SLAs, DR targets — so no security detail is invented or omitted.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">AI-powered</span>
+          <span class="meta-chip">ISMS auto-inject</span>
+          <span class="meta-chip">Section-selectable</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Enter retailer context → select deck sections → generate → ISMS facts injected automatically for security slides → copy into deck.</div>
+        <span class="mod-btn ghost">Deploying soon</span>
+      </div>
+    </div>
+
+    <!-- Module 06a — LIVE -->
+    <div class="mod-card live">
+      <span class="mod-tag tag-live">Live</span>
+      <div class="mod-num">Module 06a</div>
+      <div class="mod-title">Pre-Signing Gantt Generator</div>
+      <div class="mod-purpose">Generates a 20-week commercial programme timeline from RFP to contract signature. Covers Phases 1–4 across Discovery, RFP, POC, and Signing. IC Approval and Contract Signature are shown as gate markers. BP critical path is pre-loaded. Drag bars to fit your programme, then export to Google Sheets.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">20 weeks</span>
+          <span class="meta-chip">Draggable bars</span>
+          <span class="meta-chip">ODS export</span>
+          <span class="meta-chip">IC + Contract gates</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Select retailer → adjust workstream dates → drag bars to fit → export .ods for Google Sheets or print.</div>
+        <a class="mod-btn" href="https://nicostone-cloud.github.io/GANNT-pre" target="_blank">Open tool ↗</a>
+      </div>
+    </div>
+
+    <!-- Module 06b — LIVE -->
+    <div class="mod-card live">
+      <span class="mod-tag tag-live">Live</span>
+      <div class="mod-num">Module 06b</div>
+      <div class="mod-title">Post-Signing Gantt Generator</div>
+      <div class="mod-purpose">Generates the post-contract delivery programme timeline for a retailer POC. Named leads per workstream, draggable bars, and an ISMS review activity built in. Covers everything from discovery through to network go-live and evaluation. Exports to Google Sheets as a formatted .ods file.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Post-signing</span>
+          <span class="meta-chip">5-step setup</span>
+          <span class="meta-chip">Named leads</span>
+          <span class="meta-chip">Draggable bars</span>
+          <span class="meta-chip">ODS export</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Name the retailer → select workstreams → assign leads → set dates → drag to fit → export .ods for programme management.</div>
+        <a class="mod-btn" href="https://nicostone-cloud.github.io/GANNT" target="_blank">Open tool ↗</a>
+      </div>
+    </div>
+
+    <!-- Tool 07 — BEING BUILT -->
+    <div class="mod-card building" style="grid-column:1/-1;border-color:rgba(180,83,9,0.2)">
+      <span class="mod-tag tag-building">Being built</span>
+      <div class="mod-num">Tool 07</div>
+      <div class="mod-title">RFP / RFI Response Assistant</div>
+      <div class="mod-purpose" style="max-width:700px">A browser-based AI tool that drafts answers to retailer RFP and security questionnaire questions, grounded in BCS's ISMS, ConnectOS platform facts, and prior response library. Set the retailer name and document type, paste in a question, and get a professional draft answer back — with ISO 27001 references, correct sub-processor lists, honest positions on data residency and SOC 2, and a flag on anything that needs internal sign-off before it goes to the retailer. Requires a small backend proxy to handle API authentication securely.</div>
+      <div class="mod-meta">
+        <div class="mod-meta-row">
+          <span class="meta-chip">Pre-signing</span>
+          <span class="meta-chip">AI-powered</span>
+          <span class="meta-chip">ISMS-grounded</span>
+          <span class="meta-chip">Prior response library</span>
+          <span class="meta-chip">Verify flags</span>
+        </div>
+        <div class="mod-how"><strong style="color:rgba(255,255,255,0.7)">How it works:</strong> Set retailer and doc type → paste question → get a grounded draft → copy into your response. Flags anything that needs verifying before it goes to the retailer.</div>
+        <span class="mod-btn ghost">Coming soon</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PAGE 2: PROCESS -->
+<div class="page" id="page-process">
+
+  <div class="hero" style="padding-bottom:2rem">
+    <div class="hero-eyebrow">How it all fits together</div>
+    <div class="hero-title">Pre-signing to<br><span>live network.</span></div>
+    <div class="hero-sub">Where each tool sits in the retailer journey — from first conversation to post-signing delivery.</div>
+  </div>
+
+  <div class="process-wrap">
+
+    <!-- PRE-SIGNING -->
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-pill phase-pre">Pre-Signing</span>
+        <div>
+          <div class="phase-title">Commercial pursuit & RFP</div>
+          <div class="phase-sub">Qualify the opportunity, build the business case, respond to the RFP, negotiate to contract.</div>
+        </div>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card has-tool">
+          <div class="step-n">Step 1</div>
+          <div class="step-title">Qualify the opportunity</div>
+          <div class="step-desc">Score the retailer across strategic, commercial, and operational dimensions. Calculate MI at maturity. Get a PURSUE / EXPLORE / DECLINE verdict before committing commercial resource.</div>
+          <a class="step-tool" href="https://nicostone-cloud.github.io/Retailer-Scorecard/" target="_blank">
+            <span class="step-tool-label">Tool</span> Module 01 — Retailer Scorecard ↗
+          </a>
+        </div>
+        <div class="step-card has-tool">
+          <div class="step-n">Step 2</div>
+          <div class="step-title">Build the programme timeline</div>
+          <div class="step-desc">Map the 20-week path from initial engagement to contract signature. Set IC Approval and Contract Signature gate markers. Share with the retailer as a structured programme plan.</div>
+          <a class="step-tool" href="https://nicostone-cloud.github.io/GANNT-pre" target="_blank">
+            <span class="step-tool-label">Tool</span> Module 06a — Pre-Signing Gantt ↗
+          </a>
+        </div>
+        <div class="step-card has-tool">
+          <div class="step-n">Step 3</div>
+          <div class="step-title">Run retailer due diligence</div>
+          <div class="step-desc">Generate a 126-question due diligence pack covering IT infrastructure, connectivity, data maturity, procurement process, compliance posture, and security requirements. Surfaces blockers before they become mid-programme problems.</div>
+          <a class="step-tool" href="https://nicostone-cloud.github.io/Retailer-Q/" target="_blank">
+            <span class="step-tool-label">Tool</span> Module 04 — Due Diligence Questionnaire ↗
+          </a>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 4</div>
+          <div class="step-title">Respond to the RFP</div>
+          <div class="step-desc">Generate slide-ready deck content for the retailer's RFP. ISMS facts are injected automatically for security slides. Use the RFP/RFI Assistant (coming soon) for detailed questionnaire responses.</div>
+          <span class="step-tool" style="opacity:.5;cursor:default">
+            <span class="step-tool-label">Tool</span> Module 05 — RFP Deck Generator
+          </span>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="gate-icon">🔒</div>
+        <div>
+          <div class="gate-label">IC Approval gate</div>
+          <div class="gate-desc">Investment Committee sign-off required before programme proceeds to contract. Captured as a gate marker in the Pre-Signing Gantt.</div>
+        </div>
+      </div>
+
+      <div class="steps-grid" style="grid-template-columns:1fr">
+        <div class="step-card">
+          <div class="step-n">Step 5</div>
+          <div class="step-title">Negotiate & execute contract</div>
+          <div class="step-desc">MSA, DPA, and commercial terms finalised. Contract Signature gate marks the boundary between pre and post-signing phases.</div>
+        </div>
+      </div>
+
+      <div class="gate">
+        <div class="gate-icon">✍️</div>
+        <div>
+          <div class="gate-label">Contract Signature gate</div>
+          <div class="gate-desc">Signed MSA. Post-signing programme begins. Switch to the Post-Signing Gantt for delivery tracking.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-mid">Contract signed — handover to delivery</div>
+      <div class="conn-line"></div>
+    </div>
+
+    <!-- POST-SIGNING -->
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-pill phase-post">Post-Signing</span>
+        <div>
+          <div class="phase-title">POC delivery & network go-live</div>
+          <div class="phase-sub">From signed contract to hardware installed, content live, and measurement reporting.</div>
+        </div>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card has-tool">
+          <div class="step-n">Step 6</div>
+          <div class="step-title">Build the delivery programme</div>
+          <div class="step-desc">Generate the post-signing POC delivery Gantt. Assign named leads per workstream. Set milestone dates. Export to Google Sheets for programme management.</div>
+          <a class="step-tool" href="https://nicostone-cloud.github.io/GANNT" target="_blank">
+            <span class="step-tool-label">Tool</span> Module 06b — Post-Signing Gantt ↗
+          </a>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 7</div>
+          <div class="step-title">Discovery & store surveys</div>
+          <div class="step-desc">On-site surveys, asset register, connectivity scoping, IT security review. Architecture & Security Pack delivered to retailer IT team.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 8</div>
+          <div class="step-title">Hardware procurement & factory</div>
+          <div class="step-desc">BOM confirmed, screens and media players ordered. Factory build and quality check. SERT certification and device approval completed.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 9</div>
+          <div class="step-title">Deployment & content go-live</div>
+          <div class="step-desc">In-store installation, ConnectOS configuration, content trafficking, and campaign setup. Network uptime monitoring active.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-n">Step 10</div>
+          <div class="step-title">Measurement & evaluation</div>
+          <div class="step-desc">BLE sensors and vision analytics reporting. Verified impressions, dwell, reach. Post-campaign analysis and iROAS reporting to the retailer and brands.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RFP/RFI coming soon callout -->
+    <div class="assistant-card">
+      <div class="assistant-icon">🚧</div>
+      <div>
+        <div class="assistant-title">RFP / RFI Response Assistant — coming soon</div>
+        <div class="assistant-desc">A browser-based tool that drafts answers to retailer security questionnaires and RFP questions, grounded in BCS's ISMS and prior response library. Available across all pre-signing phases once deployed. Currently being built.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-link')[id === 'tools' ? 0 : 1].classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
